@@ -101,6 +101,44 @@ let arr = [1, 2, 3]
 赋值:  =  +=  -=
 ```
 
+### 逻辑表达式
+
+ZLang 支持 `&&`（逻辑与）、`||`（逻辑或）、`!`（逻辑非），并采用**短路求值**：
+
+- `&&`：左边为 false 时直接返回，不再计算右边
+- `||`：左边为 true 时直接返回，不再计算右边
+- `!`：对任意值取反（遵循 ZLang 的真假规则）
+
+```zlang
+// 基本逻辑运算
+let a = true && false       // false
+let b = true || false       // true
+let c = !true               // false
+
+// 复合条件判断
+let age = 25
+let score = 85
+if age >= 18 && score >= 60 {
+    print("通过")
+}
+if age < 18 || score < 60 {
+    print("未通过")
+} else {
+    print("合格")
+}
+
+// 逻辑非 + 比较运算
+if !(score == 100) {
+    print("不是满分")
+}
+
+// 0、空字符串、空数组、null 视为 false
+if !0 { print("0 是假值") }
+if !"" { print("空字符串是假值") }
+if ![] { print("空数组是假值") }
+if !false { print("false 是假值") }
+```
+
 ### 条件语句
 
 ```zlang

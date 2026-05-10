@@ -2,7 +2,7 @@
 
 ## 1. 项目概述
 
-ZLang 是一个自研的编程语言，包含完整的**词法分析器（Lexer）**、**语法分析器（Parser）**和**虚拟机解释器（VM）**，采用 Python 实现。整个编译流程为：
+ZLang 是一个demo编程语言，包含完整的**词法分析器（Lexer）**、**语法分析器（Parser）**和**虚拟机解释器（VM）**，采用 Python 实现。整个编译流程为：
 
 ```
 源代码 (.zl) → [Lexer] → Token 流 → [Parser] → AST → [VM] → 执行结果
@@ -489,7 +489,43 @@ _exec_ImportDecl()
 
 模块只加载一次，后续 import 命中缓存（单例模式）。
 
-### 6.8 文件位置
+### 6.8 逻辑运算与短路求值
+
+ZLang 支持 `&&`（逻辑与）、`||`（逻辑或）、`!`（逻辑非）三种逻辑运算符。
+
+**短路求值（Short-Circuit Evaluation）** 是逻辑运算的核心优化：
+
+```python
+# && 短路：左边为假值时直接返回左边，不计算右边
+if node.op == "&&":
+    left = self._eval(node.left, env)
+    return left if not self._is_truthy(left) else self._eval(node.right, env)
+
+# || 短路：左边为真值时直接返回左边，不计算右边
+if node.op == "||":
+    left = self._eval(node.left, env)
+    return left if self._is_truthy(left) else self._eval(node.right, env)
+```
+
+短路求值的实际意义：
+- **性能优化**：避免不必要的计算
+- **安全防护**：`if arr && len(arr) > 0` 避免对空值调用 len
+- **逻辑正确性**：`if ptr && ptr.value` 先检查指针是否为空
+
+**真假规则（Truthiness）**：
+
+```
+假值: null, false, 0, 0.0, "", []
+真值: 除假值外的所有值（包括负数、非空字符串、非空数组等）
+```
+
+**运算符优先级**：`!` > `&&` > `||`
+
+```
+!a && b || c    等价于    ((!a) && b) || c
+```
+
+### 6.9 文件位置
 
 核心代码：`zlang/vm.py`（约 560 行）
 
@@ -506,6 +542,9 @@ _exec_ImportDecl()
 | for-in | `for x in arr {}` | `ForInStatement` | `_exec_ForInStatement` |
 | while | `while cond {}` | `WhileStatement` | `_exec_WhileStatement` |
 | switch | `switch/case` | `SwitchStatement` | `_exec_SwitchStatement` |
+| 逻辑与 | `a && b` | `BinaryOp("&&")` | `_eval_BinaryOp`（短路） |
+| 逻辑或 | `a \|\| b` | `BinaryOp("\|\|")` | `_eval_BinaryOp`（短路） |
+| 逻辑非 | `!a` | `UnaryOp("!")` | `_eval_UnaryOp` |
 | 函数 | `fn f() {}` | `FuncDecl` | `_exec_FuncDecl` |
 | 匿名函数 | `fn(x) {}` | `FuncDecl(name="")` | `_eval_FuncDecl` |
 | 闭包 | 嵌套函数 | `FuncDecl` + `Environment` | `_call_function` |
