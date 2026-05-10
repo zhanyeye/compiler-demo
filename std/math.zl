@@ -1,0 +1,44 @@
+// std/math.zl — ZLang 标准数学库
+
+// 常量
+let std_math_pi = 3.141592653589793
+
+// 绝对值
+fn std_math_abs(x) {
+    if x < 0 {
+        return -x
+    }
+    return x
+}
+
+// 平方
+fn std_math_square(x) {
+    return x * x
+}
+
+// 最大值
+fn std_math_max(a, b) {
+    if a > b {
+        return a
+    }
+    return b
+}
+
+// 最小值
+fn std_math_min(a, b) {
+    if a < b {
+        return a
+    }
+    return b
+}
+
+// 整数幂
+fn std_math_pow(base, exp) {
+    let result = 1
+    let i = 0
+    while i < exp {
+        result = result * base
+        i += 1
+    }
+    return result
+}

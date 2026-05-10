@@ -1,0 +1,44 @@
+// std/utils.zl — ZLang 工具函数库
+
+// 重复字符串 n 次
+fn std_utils_repeat(s, n) {
+    let result = ""
+    let i = 0
+    while i < n {
+        result += s
+        i += 1
+    }
+    return result
+}
+
+// 限制值在 [min_val, max_val] 范围内
+fn std_utils_clamp(val, min_val, max_val) {
+    if val < min_val {
+        return min_val
+    }
+    if val > max_val {
+        return max_val
+    }
+    return val
+}
+
+// 反转数组
+fn std_utils_reverse(arr) {
+    let result = []
+    let i = len(arr) - 1
+    while i >= 0 {
+        push(result, arr[i])
+        i -= 1
+    }
+    return result
+}
+
+// 数组包含元素
+fn std_utils_contains(arr, target) {
+    for item in arr {
+        if item == target {
+            return true
+        }
+    }
+    return false
+}

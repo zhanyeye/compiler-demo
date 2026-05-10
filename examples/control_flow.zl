@@ -1,0 +1,54 @@
+// control_flow.zl — 控制流示例
+// 演示：if/else, for-in, while, switch
+
+// ---- if / else if / else ----
+let score = 85
+
+if score >= 90 {
+    print("Grade: A")
+} else if score >= 80 {
+    print("Grade: B")
+} else if score >= 70 {
+    print("Grade: C")
+} else {
+    print("Grade: F")
+}
+
+// ---- for-in loop ----
+let fruits = ["apple", "banana", "cherry"]
+for fruit in fruits {
+    print("I like " + fruit)
+}
+
+// ---- for-in with range-like array ----
+let nums = [1, 2, 3, 4, 5]
+let total = 0
+for n in nums {
+    total += n
+}
+print("Sum of 1..5 = " + str(total))
+
+// ---- while loop ----
+let count = 0
+while count < 5 {
+    print("count = " + str(count))
+    count += 1
+}
+
+// ---- switch / case ----
+let day = "Monday"
+switch day {
+    case "Monday":
+        print("Start of the work week!")
+        break
+    case "Friday":
+        print("Almost weekend!")
+        break
+    case "Saturday":
+    case "Sunday":
+        print("It's the weekend!")
+        break
+    default:
+        print("Just a regular day.")
+        break
+}

@@ -1,0 +1,72 @@
+// structs.zl — 结构体示例
+// 演示：结构体定义、实例化、字段访问、方法
+
+// 定义一个 Point 结构体
+struct Point {
+    x: float
+    y: float
+}
+
+// 定义 Rectangle 结构体
+struct Rectangle {
+    width: float
+    height: float
+}
+
+// 计算面积的函数
+fn area(rect) {
+    return rect.width * rect.height
+}
+
+// 创建实例
+let p = Point()
+p.x = 3.0
+p.y = 4.0
+print("Point: (" + str(p.x) + ", " + str(p.y) + ")")
+
+let r = Rectangle()
+r.width = 10.0
+r.height = 5.0
+print("Rectangle: " + str(r.width) + " x " + str(r.height))
+print("Area: " + str(area(r)))
+
+// 定义 Person 结构体
+struct Person {
+    name: string
+    age: int
+}
+
+// 函数充当方法
+fn greet_person(p) {
+    print("Hi, I'm " + p.name + ", age " + str(p.age))
+}
+
+fn birthday(p) {
+    p.age += 1
+}
+
+let alice = Person()
+alice.name = "Alice"
+alice.age = 30
+
+greet_person(alice)
+birthday(alice)
+greet_person(alice)
+
+// 结构体数组
+let people = []
+
+let bob = Person()
+bob.name = "Bob"
+bob.age = 25
+push(people, bob)
+
+let carol = Person()
+carol.name = "Carol"
+carol.age = 28
+push(people, carol)
+
+print("People:")
+for person in people {
+    greet_person(person)
+}

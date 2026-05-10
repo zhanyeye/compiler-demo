@@ -1,0 +1,95 @@
+// functions.zl — 函数示例
+// 演示：函数定义、递归、闭包、高阶函数
+
+// 基本函数定义
+fn greet(name) {
+    print("Hello, " + name + "!")
+}
+
+greet("Alice")
+greet("Bob")
+
+// 带返回值的函数
+fn add(a, b) {
+    return a + b
+}
+
+let result = add(10, 20)
+print("10 + 20 = " + str(result))
+
+// 递归：计算阶乘
+fn factorial(n) {
+    if n <= 1 {
+        return 1
+    }
+    return n * factorial(n - 1)
+}
+
+print("5! = " + str(factorial(5)))
+print("10! = " + str(factorial(10)))
+
+// 闭包：函数返回函数
+fn make_counter(start) {
+    let count = start
+    fn increment() {
+        count += 1
+        return count
+    }
+    return increment
+}
+
+let counter = make_counter(0)
+print("Counter: " + str(counter()))
+print("Counter: " + str(counter()))
+print("Counter: " + str(counter()))
+
+// 高阶函数
+fn apply(f, x) {
+    return f(x)
+}
+
+fn double(n) {
+    return n * 2
+}
+
+print("double(21) = " + str(apply(double, 21)))
+
+// 斐波那契数列
+fn fibonacci(n) {
+    if n <= 0 {
+        return 0
+    }
+    if n == 1 {
+        return 1
+    }
+    return fibonacci(n - 1) + fibonacci(n - 2)
+}
+
+print("Fibonacci(10) = " + str(fibonacci(10)))
+
+// 数组操作函数
+fn map(arr, f) {
+    let result = []
+    for item in arr {
+        push(result, f(item))
+    }
+    return result
+}
+
+fn filter(arr, f) {
+    let result = []
+    for item in arr {
+        if f(item) {
+            push(result, item)
+        }
+    }
+    return result
+}
+
+let numbers = [1, 2, 3, 4, 5, 6, 7, 8]
+let doubled = map(numbers, fn(x) { return x * 2 })
+let evens = filter(numbers, fn(x) { return x % 2 == 0 })
+
+print("Numbers: " + str(numbers))
+print("Doubled: " + str(doubled))
+print("Evens: " + str(evens))

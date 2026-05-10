@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -m zlang run examples/control_flow.zl)"
+    ]
+  }
+}

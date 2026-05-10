@@ -1,0 +1,20 @@
+// import_demo.zl — 文件导入示例
+// 演示：import 语句，模块化代码
+
+import std.math
+import std.utils
+
+// 使用 std.math 中的函数
+let r = 5.0
+let circle_area = std_math_pi * std_math_square(r)
+print("Circle area (r=5): " + str(circle_area))
+
+let abs_val = std_math_abs(-42)
+print("abs(-42) = " + str(abs_val))
+
+// 使用 std.utils 中的函数
+let msg = std_utils_repeat("Hi", 3)
+print("Repeated: " + msg)
+
+let clamped = std_utils_clamp(150, 0, 100)
+print("clamp(150, 0, 100) = " + str(clamped))

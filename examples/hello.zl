@@ -1,0 +1,21 @@
+// hello.zl — ZLang 入门示例
+// 演示：变量定义、基本运算、字符串
+
+// 变量定义
+let name = "World"
+let year = 2026
+let pi = 3.14159
+
+// 算术运算
+let sum = 1 + 2 + 3
+let product = 4 * 5
+
+print("Hello, " + name + "!")
+print("Year: " + str(year))
+print("Pi is approximately: " + str(pi))
+print("1+2+3 = " + str(sum))
+print("4*5 = " + str(product))
+
+// 字符串拼接
+let greeting = "Welcome to ZLang!"
+print(greeting)
