@@ -1,0 +1,13 @@
+// 纯循环微基准测试（排除递归和函数调用）
+let N = 5000
+let sum = 0
+let i = 0
+while i < N {
+    let j = 0
+    while j < 100 {
+        sum += j
+        j += 1
+    }
+    i += 1
+}
+print("Sum = " + str(sum))

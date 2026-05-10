@@ -5,8 +5,14 @@
 ## 运行方式
 
 ```bash
-# 在项目根目录执行
-python -m zlang run examples/<文件名>.zl
+# Python 版
+cd src/python && python -m zlang run ../../examples/<文件名>.zl
+
+# Python 字节码版
+cd src/python && python -m zlangx run ../../examples/<文件名>.zl
+
+# Go 版
+cd src/golang && ./golang run ../../examples/<文件名>.zl
 ```
 
 ## 示例列表
@@ -16,7 +22,7 @@ python -m zlang run examples/<文件名>.zl
 变量定义、算术运算、字符串拼接、类型转换。
 
 ```bash
-python -m zlang run examples/hello.zl
+cd src/python && python -m zlang run ../../examples/hello.zl
 ```
 
 ### [control_flow.zl](control_flow.zl) — 控制流
@@ -24,7 +30,7 @@ python -m zlang run examples/hello.zl
 if/else if/else 条件判断、for-in 遍历、while 循环、switch/case 匹配。
 
 ```bash
-python -m zlang run examples/control_flow.zl
+cd src/python && python -m zlang run ../../examples/control_flow.zl
 ```
 
 ### [functions.zl](functions.zl) — 函数与闭包
@@ -32,7 +38,7 @@ python -m zlang run examples/control_flow.zl
 函数定义、递归（阶乘、斐波那契）、闭包（计数器）、高阶函数（map/filter）、匿名函数。
 
 ```bash
-python -m zlang run examples/functions.zl
+cd src/python && python -m zlang run ../../examples/functions.zl
 ```
 
 ### [structs.zl](structs.zl) — 结构体
@@ -40,7 +46,7 @@ python -m zlang run examples/functions.zl
 结构体定义与实例化、字段读写、结构体数组、用函数模拟方法。
 
 ```bash
-python -m zlang run examples/structs.zl
+cd src/python && python -m zlang run ../../examples/structs.zl
 ```
 
 ### [import_demo.zl](import_demo.zl) — 模块导入
@@ -48,7 +54,7 @@ python -m zlang run examples/structs.zl
 `import` 语句的使用，加载 `std/` 标准库中的函数和常量。
 
 ```bash
-python -m zlang run examples/import_demo.zl
+cd src/python && python -m zlang run ../../examples/import_demo.zl
 ```
 
 ## 学习建议

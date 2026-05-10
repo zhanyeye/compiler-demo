@@ -2,11 +2,19 @@
 
 ## 1. 项目概述
 
-ZLang 是一个demo编程语言，包含完整的**词法分析器（Lexer）**、**语法分析器（Parser）**和**虚拟机解释器（VM）**，采用 Python 实现。整个编译流程为：
+ZLang 是一个教学型编程语言，包含完整的**词法分析器（Lexer）**、**语法分析器（Parser）**和**虚拟机解释器（VM）**。提供 Python 和 Go 两种实现，整个编译流程为：
 
 ```
 源代码 (.zl) → [Lexer] → Token 流 → [Parser] → AST → [VM] → 执行结果
 ```
+
+项目提供三个执行后端：
+
+| 后端 | 路径 | 语言 | 执行方式 | 相对性能 |
+|------|------|------|---------|---------|
+| VM | `python/zlang/` | Python | 树遍历 | 1x |
+| XVM | `python/zlangx/` | Python | 字节码栈式 VM | 1.7x |
+| Go VM | `src/golang/` | Go | 树遍历 | 20x |
 
 本项目采用经典的**三段式编译器架构**，每一层职责清晰、互相解耦：
 
@@ -741,16 +749,27 @@ Lexer 只关心字符→Token，Parser 只关心 Token→AST，VM 只关心 AST�
 ### 11.2 优化路线
 
 ```
-当前（树遍历）           优化 1（字节码）           优化 2（JIT）
+Python 树遍历           Python 字节码            Go 原生
 源码                    源码                     源码
  ↓                       ↓                        ↓
-AST ──→ 直接执行        AST ──→ 字节码           AST ──→ 字节码
-                          ↓                        ↓
-                       栈式VM执行              热点代码→机器码
-                       (快 5-10x)             (快 50-100x)
+AST ──→ 直接执行        AST ──→ 字节码           AST ──→ 直接执行
+                          ↓                     (编译为机器码)
+                       栈式VM执行
 ```
 
-字节码编译是投入产出比最高的优化方向。
+实际性能对比（综合基准测试，50 次迭代取均值）：
+
+| 版本 | 每次耗时 | 相对性能 |
+|------|---------|---------|
+| zlang（Python 树遍历） | ~2.8s | 1x |
+| zlangx（Python 字节码） | ~1.3s | 1.7x |
+| golang（Go 原生） | ~0.14s | **20x** |
+
+Go 版本的核心优势：
+- 编译为原生机器码，无 Python 解释器开销
+- `interface{}` + 类型断言替代 Python 动态类型
+- `defer/recover` 高效处理控制流（break/continue/return）
+- `ZArray` 包装类型实现数组原地修改
 
 ---
 
@@ -758,28 +777,46 @@ AST ──→ 直接执行        AST ──→ 字节码           AST ──�
 
 ```
 compiler-demo/
-├── zlang/                        编译器核心
-│   ├── __init__.py               包入口
-│   ├── __main__.py               CLI 命令行工具
-│   ├── token.py                  Token 类型与关键字定义
-│   ├── lexer.py                  词法分析器
-│   ├── ast.py                    AST 节点定义（25 种）
-│   ├── parser.py                 语法分析器（递归下降）
-│   └── vm.py                     虚拟机 / 解释器
-├── std/                          标准库（用 ZLang 自身编写）
-│   ├── math.zl                   数学函数
-│   └── utils.zl                  工具函数
-├── examples/                     示例程序
-│   ├── hello.zl                  基础语法
-│   ├── control_flow.zl           控制流
-│   ├── functions.zl              函数与闭包
-│   ├── structs.zl                结构体
-│   └── import_demo.zl            模块导入
-├── tests/                        测试用例
-│   ├── test_lexer.py             词法分析测试（21 个）
-│   ├── test_parser.py            语法分析测试（33 个）
-│   └── test_vm.py                执行引擎测试（48 个）
-├── doc/                          设计文档
-│   └── design.md                 本文档
-└── README.md                     项目说明
+├── src/                              编译器实现
+│   ├── python/                       Python 实现
+│   │   ├── zlang/                    树遍历解释器
+│   │   │   ├── __init__.py           包入口
+│   │   │   ├── __main__.py           CLI 命令行工具
+│   │   │   ├── token.py              Token 类型与关键字定义
+│   │   │   ├── lexer.py              词法分析器
+│   │   │   ├── ast.py                AST 节点定义（25 种）
+│   │   │   ├── parser.py             语法分析器（递归下降）
+│   │   │   └── vm.py                 虚拟机 / 解释器
+│   │   ├── zlangx/                   字节码虚拟机
+│   │   │   ├── __init__.py
+│   │   │   ├── __main__.py           CLI 入口
+│   │   │   ├── bytecode.py           字节码指令定义
+│   │   │   ├── compiler.py           AST → 字节码编译器
+│   │   │   └── vm.py                 栈式字节码虚拟机
+│   │   └── tests/                    测试用例（102 个）
+│   │       ├── test_lexer.py         词法分析测试（21 个）
+│   │       ├── test_parser.py        语法分析测试（33 个）
+│   │       └── test_vm.py            执行引擎测试（48 个）
+│   └── golang/                       Go 高性能实现
+│       ├── go.mod
+│       ├── token.go                  Token 类型定义
+│       ├── lexer.go                  词法分析器
+│       ├── ast.go                    AST 节点定义
+│       ├── parser.go                 语法分析器
+│       ├── vm.go                     树遍历解释器
+│       └── main.go                   CLI 入口
+├── examples/                         示例程序 & 标准库
+│   ├── hello.zl                      基础语法
+│   ├── control_flow.zl               控制流
+│   ├── functions.zl                  函数与闭包
+│   ├── structs.zl                    结构体
+│   ├── import_demo.zl                模块导入
+│   ├── bench.zl                      性能基准测试
+│   ├── bench_loop.zl                 纯循环微基准
+│   └── std/                          标准库（用 ZLang 自身编写）
+│       ├── math.zl                   数学函数
+│       └── utils.zl                  工具函数
+├── doc/                              设计文档
+│   └── design.md                     本文档
+└── README.md                         项目说明
 ```

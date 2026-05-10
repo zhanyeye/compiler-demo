@@ -1,0 +1,46 @@
+// bench.zl — 性能基准测试
+// 测试循环、算术、函数调用、递归的综合性能
+
+// 1. 循环 + 算术: 计算 1 到 N 的和
+let N = 1000
+let sum = 0
+let i = 0
+while i < N {
+    sum += i
+    i += 1
+}
+print("Sum 0.." + str(N) + " = " + str(sum))
+
+// 2. 函数调用: N 次函数调用
+fn add(a, b) {
+    return a + b
+}
+let result = 0
+i = 0
+while i < N {
+    result = add(result, 1)
+    i += 1
+}
+print("Add " + str(N) + " times = " + str(result))
+
+// 3. 递归: 斐波那契
+fn fib(n) {
+    if n <= 1 { return n }
+    return fib(n - 1) + fib(n - 2)
+}
+print("fib(25) = " + str(fib(25)))
+
+// 4. 数组操作
+let arr = []
+i = 0
+while i < 100 {
+    push(arr, i)
+    i += 1
+}
+let total = 0
+for item in arr {
+    total += item
+}
+print("Array sum = " + str(total))
+
+print("Benchmark done!")

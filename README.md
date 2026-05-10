@@ -1,6 +1,6 @@
 # ZLang — 一个简洁的编程语言 & 编译器
 
-ZLang 是一个用 Python 实现的教学型编程语言，包含完整的 **词法分析器**、**语法分析器（Parser）** 和 **虚拟机解释器（VM）**。
+ZLang 是一个教学型编程语言，包含完整的 **词法分析器**、**语法分析器（Parser）** 和 **虚拟机解释器（VM）**，提供 Python 和 Go 两种实现。
 
 ## 特性
 
@@ -23,62 +23,156 @@ ZLang 是一个用 Python 实现的教学型编程语言，包含完整的 **词
 
 ## 快速开始
 
-### 运行程序
+### Python 版（树遍历解释器）
 
 ```bash
-python -m zlang run examples/hello.zl
-```
+cd src/python
 
-### 交互式 REPL
+# 运行程序
+python -m zlang run ../../examples/hello.zl
 
-```bash
+# 交互式 REPL
 python -m zlang repl
-```
 
-### 调试
+# 调试：查看 Token 流 / AST
+python -m zlang tokens ../../examples/hello.zl
+python -m zlang ast ../../examples/hello.zl
 
-```bash
-# 查看词法分析结果
-python -m zlang tokens examples/hello.zl
-
-# 查看 AST
-python -m zlang ast examples/hello.zl
-```
-
-### 运行测试
-
-```bash
+# 运行测试
 pip install pytest
 python -m pytest tests/ -v
+```
+
+### Python 字节码版
+
+```bash
+cd src/python
+
+# 运行程序（字节码模式）
+python -m zlangx run ../../examples/hello.zl
+
+# 查看生成的字节码
+python -m zlangx bytecode ../../examples/hello.zl
+
+# 性能对比
+python -m zlangx bench ../../examples/bench.zl -n 50
+```
+
+### Go 高性能版
+
+```bash
+cd src/golang
+go build -o golang .
+
+# 运行程序
+./golang run ../../examples/hello.zl
+
+# 交互式 REPL
+./golang repl
+
+# 调试
+./golang tokens ../../examples/hello.zl
+./golang ast ../../examples/hello.zl
+
+# 性能基准测试
+./golang bench ../../examples/bench.zl -n 50
 ```
 
 ## 项目结构
 
 ```
 compiler-demo/
-├── zlang/                   # 编译器核心代码
-│   ├── __init__.py          # 包入口
-│   ├── __main__.py          # CLI 入口 (python -m zlang)
-│   ├── token.py             # Token 类型定义
-│   ├── lexer.py             # 词法分析器：源码 → Token 流
-│   ├── ast.py               # AST 节点定义
-│   ├── parser.py            # 语法分析器：Token 流 → AST
-│   └── vm.py                # 虚拟机：AST → 执行结果
-├── std/                     # 标准库
-│   ├── math.zl              # 数学函数库
-│   └── utils.zl             # 工具函数库
-├── examples/                # 示例程序
-│   ├── hello.zl             # 基础语法
-│   ├── control_flow.zl      # 控制流
-│   ├── functions.zl         # 函数、闭包、高阶函数
-│   ├── structs.zl           # 结构体
-│   └── import_demo.zl       # 文件导入
-├── tests/                   # 测试用例
-│   ├── test_lexer.py        # 词法分析器测试
-│   ├── test_parser.py       # 语法分析器测试
-│   └── test_vm.py           # 虚拟机测试
+├── src/                              # 编译器实现
+│   ├── python/                       # Python 实现
+│   │   ├── zlang/                    # 树遍历解释器
+│   │   │   ├── __init__.py           包入口
+│   │   │   ├── __main__.py           CLI 入口
+│   │   │   ├── token.py              Token 类型定义
+│   │   │   ├── lexer.py              词法分析器：源码 → Token 流
+│   │   │   ├── ast.py                AST 节点定义（25 种）
+│   │   │   ├── parser.py             语法分析器：Token 流 → AST
+│   │   │   └── vm.py                 虚拟机：AST → 执行结果
+│   │   ├── zlangx/                   # 字节码虚拟机
+│   │   │   ├── __init__.py
+│   │   │   ├── __main__.py           CLI 入口
+│   │   │   ├── bytecode.py           字节码指令定义
+│   │   │   ├── compiler.py           AST → 字节码编译器
+│   │   │   └── vm.py                 栈式字节码虚拟机
+│   │   └── tests/                    # 测试用例（102 个）
+│   │       ├── test_lexer.py
+│   │       ├── test_parser.py
+│   │       └── test_vm.py
+│   └── golang/                       # Go 高性能实现
+│       ├── go.mod
+│       ├── token.go                  Token 类型定义
+│       ├── lexer.go                  词法分析器
+│       ├── ast.go                    AST 节点定义
+│       ├── parser.go                 语法分析器
+│       ├── vm.go                     树遍历解释器
+│       └── main.go                   CLI 入口
+├── examples/                         # 示例程序 & 标准库
+│   ├── hello.zl                      基础语法
+│   ├── control_flow.zl               控制流
+│   ├── functions.zl                  函数、闭包、高阶函数
+│   ├── structs.zl                    结构体
+│   ├── import_demo.zl                文件导入
+│   ├── bench.zl                      性能基准测试
+│   ├── bench_loop.zl                 纯循环微基准
+│   └── std/                          标准库（ZLang 编写）
+│       ├── math.zl                   数学函数库
+│       └── utils.zl                  工具函数库
+├── doc/
+│   └── design.md                     设计文档
 └── README.md
 ```
+
+## 编译器架构
+
+```
+源码 (.zl 文件)
+    │
+    ▼
+┌─────────┐
+│  Lexer   │  词法分析：字符流 → Token 流
+└────┬─────┘
+     │  Token[]
+     ▼
+┌─────────┐
+│ Parser  │  语法分析：Token 流 → AST
+└────┬─────┘
+     │  Program AST
+     ├──────────────────────────────────────────┐
+     ▼                      ▼                   ▼
+┌─────────┐            ┌──────────┐    ┌──────────┐
+│   VM    │            │ Compiler │    │  XVM     │
+│ (树遍历) │            │ 字节码编译 │───▶│ 栈式VM   │
+└─────────┘            └──────────┘    └──────────┘
+  src/python/zlang/      src/python/zlangx/
+
+                                        ┌──────────┐
+                                        │  Go VM   │
+                                        │ (树遍历)  │
+                                        └──────────┘
+                                        src/golang/
+```
+
+三个后端共享同一套前端（Lexer + Parser），区别在于执行引擎：
+
+| 后端 | 路径 | 执行方式 | 性能 |
+|------|------|---------|------|
+| VM | `src/python/zlang/vm.py` | Python 树遍历 | 基准 |
+| XVM | `src/python/zlangx/vm.py` | Python 字节码栈式 VM | 1.7x |
+| Go VM | `src/golang/vm.go` | Go 原生树遍历 | **20x** |
+
+## 性能对比
+
+综合基准测试（循环 + 函数调用 + 递归 + 数组），50 次迭代取均值：
+
+| 版本 | 每次耗时 | 相对性能 |
+|------|---------|---------|
+| zlang（Python 树遍历） | ~2.8s | 1x |
+| zlangx（Python 字节码） | ~1.3s | 1.7x |
+| golang（Go 原生） | **~0.14s** | **20x** |
 
 ## 语言语法参考
 
@@ -127,16 +221,10 @@ if age < 18 || score < 60 {
     print("合格")
 }
 
-// 逻辑非 + 比较运算
-if !(score == 100) {
-    print("不是满分")
-}
-
 // 0、空字符串、空数组、null 视为 false
 if !0 { print("0 是假值") }
 if !"" { print("空字符串是假值") }
 if ![] { print("空数组是假值") }
-if !false { print("false 是假值") }
 ```
 
 ### 条件语句
@@ -277,31 +365,6 @@ let area = std_math_pi * std_math_square(5.0)
 /* 多行
    注释 */
 ```
-
-## 编译器架构
-
-```
-源码 (.zl 文件)
-    │
-    ▼
-┌─────────┐
-│  Lexer   │  词法分析：字符流 → Token 流
-└────┬─────┘
-     │  Token[]
-     ▼
-┌─────────┐
-│ Parser  │  语法分析：Token 流 → AST (抽象语法树)
-└────┬─────┘
-     │  Program AST
-     ▼
-┌─────────┐
-│   VM    │  解释执行：遍历 AST → 运行结果
-└─────────┘
-```
-
-- **Lexer** (`zlang/lexer.py`): 将源代码文本拆分为 Token 序列，处理关键字、标识符、数字、字符串、运算符等
-- **Parser** (`zlang/parser.py`): 递归下降解析器，将 Token 流构建为 AST，支持运算符优先级
-- **VM** (`zlang/vm.py`): 树遍历解释器，直接执行 AST 节点，支持作用域、闭包、结构体实例化
 
 ## License
 

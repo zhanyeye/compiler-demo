@@ -18,17 +18,26 @@ from zlang.vm import Interpreter
 from zlang.ast import ASTNode
 
 
+def _get_project_root():
+    """获取项目根目录（从 src/python/zlang/__main__.py 上溯四级）。"""
+    d = os.path.dirname(os.path.abspath(__file__))  # .../src/python/zlang
+    d = os.path.dirname(d)  # .../src/python
+    d = os.path.dirname(d)  # .../src
+    return os.path.dirname(d)  # project root
+
+
 def resolve_import(module_path):
     """
     根据模块路径解析并加载模块源码。
 
     将点分路径转换为文件路径：如 "std.math" → "std/math.zl"
-    在当前工作目录下查找模块文件。
+    依次在当前工作目录和 examples/ 目录下查找模块文件。
     """
     parts = module_path.split(".")
     filepath = os.path.join(*parts) + ".zl"
 
-    search_dirs = [os.getcwd()]
+    project_root = _get_project_root()
+    search_dirs = [os.getcwd(), os.path.join(project_root, "examples")]
     for d in search_dirs:
         full = os.path.join(d, filepath)
         if os.path.isfile(full):
